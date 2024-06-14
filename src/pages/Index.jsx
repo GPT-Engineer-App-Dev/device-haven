@@ -8,6 +8,8 @@ const sampleProducts = [
     name: "Smartphone XYZ",
     description: "A high-end smartphone with a sleek design and powerful features.",
     price: "$799",
+    category: "Electronics",
+    rating: 4.5,
     imageUrl: "https://via.placeholder.com/150"
   },
   {
@@ -15,6 +17,8 @@ const sampleProducts = [
     name: "Laptop ABC",
     description: "A lightweight laptop with excellent performance and battery life.",
     price: "$1199",
+    category: "Computers",
+    rating: 4.7,
     imageUrl: "https://via.placeholder.com/150"
   },
   {
@@ -22,21 +26,30 @@ const sampleProducts = [
     name: "Wireless Headphones",
     description: "Noise-cancelling wireless headphones with superior sound quality.",
     price: "$199",
+    category: "Accessories",
+    rating: 4.2,
     imageUrl: "https://via.placeholder.com/150"
   }
 ];
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [priceFilter, setPriceFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [ratingFilter, setRatingFilter] = useState("");
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value.toLowerCase());
   };
 
-  const filteredProducts = sampleProducts.filter(product =>
-    product.name.toLowerCase().includes(searchQuery) ||
-    product.description.toLowerCase().includes(searchQuery)
-  );
+  const filteredProducts = sampleProducts.filter(product => {
+    const matchesSearchQuery = product.name.toLowerCase().includes(searchQuery) || product.description.toLowerCase().includes(searchQuery);
+    const matchesPriceFilter = priceFilter ? product.price.replace('$', '') <= parseFloat(priceFilter) : true;
+    const matchesCategoryFilter = categoryFilter ? product.category.toLowerCase().includes(categoryFilter.toLowerCase()) : true;
+    const matchesRatingFilter = ratingFilter ? product.rating >= parseFloat(ratingFilter) : true;
+    return matchesSearchQuery && matchesPriceFilter && matchesCategoryFilter && matchesRatingFilter;
+  });
+
   return (
     <Container maxW="container.xl" py={10}>
       <VStack spacing={8} align="stretch">
@@ -51,6 +64,30 @@ const Index = () => {
             placeholder="Search for products..."
             value={searchQuery}
             onChange={handleSearchChange}
+          />
+        </InputGroup>
+        <InputGroup mb={6}>
+          <Input
+            type="text"
+            placeholder="Filter by price..."
+            value={priceFilter}
+            onChange={(e) => setPriceFilter(e.target.value)}
+          />
+        </InputGroup>
+        <InputGroup mb={6}>
+          <Input
+            type="text"
+            placeholder="Filter by category..."
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          />
+        </InputGroup>
+        <InputGroup mb={6}>
+          <Input
+            type="text"
+            placeholder="Filter by rating..."
+            value={ratingFilter}
+            onChange={(e) => setRatingFilter(e.target.value)}
           />
         </InputGroup>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={10}>
